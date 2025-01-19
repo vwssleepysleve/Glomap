@@ -4,77 +4,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>REDOKS</title>
-    <link rel="stylesheet" href="/css/index.css"> <!-- Link to the external CSS file -->
-    <link rel="icon" type="image/png" href="/glomap/assets/app/favicon-96x96.png" sizes="96x96" />
-<link rel="icon" type="image/svg+xml" href="/glomap/assets/app/favicon.svg" />
-<link rel="shortcut icon" href="/glomap/assets/app/favicon.ico" />
-<link rel="apple-touch-icon" sizes="180x180" href="/glomap/assets/app/apple-touch-icon.png" />
-<meta name="apple-mobile-web-app-title" content="Redoks" />
-<link rel="manifest" href="/glomap/assets/app/site.webmanifest" />
-</head>
-<body>
-    <!-- Loader -->
-    <div id="loading">
-        <div class="spinner"></div>
-        <p>Loading...</p>
-    </div>
-
-    <!-- Main content -->
-    <div id="content">
-        <div class="header">
-            <img src="/Glomap/assets/images/redoks.png" alt="App Logo" class="app-logo">
-            <h1>Welcome to REDOKS</h1>
-        </div>
-
-        <div class="welcome-container">
-            <p class="welcome-message">
-                We are thrilled to have you here. Start exploring now!
-            </p>
-            <p class="info-message">
-                <strong>Note:</strong> This is an under-development version deployed for testing purposes. Access is limited to a few individuals.
-            </p>
-        </div>
-
-        <div class="button-group">
-            <a href="/Glomap/dm_list.html" class="btn primary-btn">Go to Messaging</a>
-            <button id="logoutBtn" class="btn secondary-btn">Logout</button>
-        </div>
-    </div>
-
-    <script type="module">
-        import { auth } from '/Glomap/js/firebase.js';
-        import { onAuthStateChanged, signOut } from "https://www.gstatic.com/firebasejs/11.1.0/firebase-auth.js";
-
-        const loadingDiv = document.getElementById("loading");
-        const contentDiv = document.getElementById("content");
-        const logoutBtn = document.getElementById("logoutBtn");
-
-        // Check authentication state
-        onAuthStateChanged(auth, (user) => {
-            if (user) {
-                loadingDiv.style.display = "none";
-                contentDiv.style.display = "block";
-            } else {
-                window.location.href = "/Glomap/login.html";
-            }
-        });
-
-        // Logout functionality
-        logoutBtn.addEventListener("click", () => {
-            signOut(auth).then(() => {
-                window.location.href = "/Glomap/login.html";
-            });
-        });
-    </script>
-</body>
-</html>
-<!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>REDOKS</title>
-    <link rel="stylesheet" href="/Glomap/css/index.css"> <!-- Link to the external CSS file -->
+    <link rel="stylesheet" href="Glomap/css/index.css"> <!-- Link to the external CSS file -->
     <link rel="icon" type="image/png" href="/glomap/assets/app/favicon-96x96.png" sizes="96x96" />
 <link rel="icon" type="image/svg+xml" href="/glomap/assets/app/favicon.svg" />
 <link rel="shortcut icon" href="/glomap/assets/app/favicon.ico" />
