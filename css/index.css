@@ -1,0 +1,142 @@
+/* Reset and base styles */
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+body {
+    font-family: "Poppins", Arial, sans-serif;
+    background-color: #121212; /* Dark background */
+    color: #ffffff; /* White text */
+    margin: 0;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    height: 100vh;
+    overflow: hidden;
+}
+
+/* App logo and header */
+.app-logo {
+    width: 100px;
+    margin-bottom: 15px;
+    animation: fade-in 1s ease-in-out;
+}
+
+.header {
+    text-align: center;
+    margin-bottom: 20px;
+}
+
+.header h1 {
+    font-size: 2rem;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 1.5px;
+    word-wrap: break-word;
+    color:  #16FFDE;
+}
+
+/* Welcome container */
+.welcome-container {
+    text-align: center;
+    margin-bottom: 30px;
+    padding: 0 20px;
+    word-wrap: break-word;
+}
+
+.welcome-message {
+    font-size: 1.1rem;
+    color: #707070;
+    margin-bottom: 15px;
+    line-height: 1.5;
+}
+
+.info-message {
+    font-size: 0.9rem;
+    color: #f5a623;
+    line-height: 1.4;
+}
+
+/* Button group */
+.button-group {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 15px;
+}
+
+.btn {
+    text-decoration: none;
+    padding: 12px 24px;
+    font-size: 1rem;
+    font-weight: bold;
+    border-radius: 25px;
+    text-align: center;
+    cursor: pointer;
+    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.3);
+    transition: all 0.3s ease;
+}
+
+.primary-btn {
+    background: linear-gradient(135deg, #ff5f6d, #ffc371);
+    color: #fff;
+}
+
+.primary-btn:hover {
+    transform: scale(1.05);
+    box-shadow: 0 6px 20px rgba(255, 95, 109, 0.8);
+}
+
+.secondary-btn {
+    background: linear-gradient(135deg, #6a11cb, #2575fc);
+    color: #fff;
+}
+
+.secondary-btn:hover {
+    transform: scale(1.05);
+    box-shadow: 0 6px 20px rgba(106, 17, 203, 0.8);
+}
+
+/* Spinner styles */
+.spinner {
+    margin: 0 auto 20px;
+    width: 60px;
+    height: 60px;
+    border: 6px solid rgba(255, 255, 255, 0.2);
+    border-top: 6px solid #3646FF;
+    border-radius: 50%;
+    animation: spin 1s linear infinite;
+}
+
+@keyframes spin {
+    from { transform: rotate(0deg); }
+    to { transform: rotate(360deg); }
+}
+
+/* Animations */
+@keyframes fade-in {
+    from { opacity: 0; }
+    to { opacity: 1; }
+}
+
+@keyframes slide-up {
+    from { transform: translateY(50px); opacity: 0; }
+    to { transform: translateY(0); opacity: 1; }
+}
+
+/* Loader container */
+#loading {
+    text-align: center;
+    animation: fade-in 1s ease-in-out;
+}
+
+/* Content section */
+#content {
+    text-align: center;
+    display: none;
+    animation: slide-up 1s ease-in-out;
+    padding: 20px;
+}

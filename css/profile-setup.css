@@ -1,0 +1,275 @@
+/* General Settings */
+body {
+  background-color: #000000 !important;/* Dark background */
+  color: #e0e0e0; /* Light text color for contrast */
+  font-family: 'Roboto', sans-serif;
+  margin: 0;
+  padding: 0;
+}
+
+/* Card Styles */
+.card {
+  background-color: #000000; /* Slightly lighter dark background */
+  color: #e0e0e0; /* Text color */
+  border-radius: 12px;
+  box-shadow: 0 4px 10px rgba(0, 0, 0, 0.8); /* Subtle shadow */
+}
+
+.card-header {
+  background-color: #000000; /* Header with subtle variation */
+  color: #000000;
+  border-bottom: 1px solid #333333;
+  padding: 20px;
+  border-top-left-radius: 12px;
+  border-top-right-radius: 12px;
+}
+
+.card-header h2 {
+  font-size: 1.5rem;
+  margin-bottom: 5px;
+}
+
+.card-header p {
+  font-size: 0.9rem;
+  color: #bdbdbd; /* Subtle text */
+}
+
+/* Form Styles */
+form {
+  margin-top: 20px;
+}
+
+.form-label {
+  color: #bdbdbd; /* Subtle text for labels */
+  font-weight: 500;
+}
+
+.form-control {
+  background-color: #FFFFFF;
+  border: 1px solid #444444;
+  color: #271F1F; /* Complete color property */
+  border-radius: 8px;
+}
+
+.form-control:focus {
+  background-color: #333333;
+  border-color: #6200ea; /* Accent color */
+  color: #ffffff;
+  box-shadow: 0 0 5px rgba(98, 0, 234, 0.5); /* Glow effect */
+}
+
+.form-text {
+  color: #9e9e9e;
+  font-size: 0.85rem;
+}
+
+/* Buttons */
+.btn-primary {
+  background-color: #6200ea; /* Accent color */
+  border-color: #6200ea;
+  color: #ffffff;
+  font-weight: 600;
+  border-radius: 8px;
+}
+
+.btn-primary:hover {
+  background-color: #7c4dff; /* Hover effect */
+  border-color: #7c4dff;
+  box-shadow: 0 4px 10px rgba(124, 77, 255, 0.4); /* Glow effect */
+}
+
+/* Input File Styling */
+input[type="file"] {
+  background-color: #2b2b2b;
+  color: #e0e0e0;
+}
+
+input[type="file"]::file-selector-button {
+  background-color: #6200ea;
+  color: #ffffff;
+  border: none;
+  padding: 5px 10px;
+  border-radius: 8px;
+  cursor: pointer;
+}
+
+input[type="file"]::file-selector-button:hover {
+  background-color: #7c4dff;
+}
+
+/* Textarea Styling */
+textarea {
+  background-color: #9C9C9C; /* Corrected semicolon */
+  border: 1px solid #444444;
+  color: #e0e0e0;
+  border-radius: 8px;
+  resize: none;
+}
+
+textarea::placeholder {
+  color: #FFFFFF; /* Placeholder color */
+  font-style: italic; /* Optional: make the text italic */
+}
+
+textarea:focus {
+  background-color: #333333;
+  border-color: #6200ea;
+  box-shadow: 0 0 5px rgba(98, 0, 234, 0.5);
+}
+
+/* Validation Messages */
+:invalid {
+  border-color: #ff5252 !important; /* Error color */
+}
+
+:invalid:focus {
+  box-shadow: 0 0 5px rgba(255, 82, 82, 0.5);
+}
+
+/* Footer */
+.card-footer {
+  background-color: #2a2a2a;
+  border-top: 1px solid #333333;
+  padding: 15px;
+  text-align: center;
+  border-bottom-left-radius: 12px;
+  border-bottom-right-radius: 12px;
+  color: #bdbdbd;
+}
+
+/* Responsive Design */
+@media (max-width: 768px) {
+  .card {
+    margin: 20px;
+  }
+
+  .btn-primary {
+    width: 100%;
+  }
+}
+
+/* General Modal Styles */
+/* General Modal Overlay */
+#custom-alert, #custom-confirm {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: rgba(0, 0, 0, 0.5); /* Transparent dark overlay */
+  display: none; /* Hidden by default */
+  justify-content: center;
+  align-items: center;
+  z-index: 1050; /* On top of other content */
+  transition: opacity 0.3s ease;
+}
+
+/* Modal Container */
+.modal-container {
+  background-color: #fff;
+  padding: 25px;
+  border-radius: 10px;
+  box-shadow: 0 4px 15px rgba(0, 0, 0, 0.2);
+  text-align: center;
+  max-width: 450px;
+  width: 90%;
+  animation: fadeIn 0.3s ease-out; /* Smooth fade-in animation */
+}
+
+/* Modal Text */
+.modal-container p {
+  font-size: 18px;
+  color: #333;
+  margin-bottom: 20px;
+  line-height: 1.5;
+}
+
+/* Buttons */
+button {
+  padding: 12px 20px;
+  font-size: 16px;
+  border: none;
+  border-radius: 5px;
+  cursor: pointer;
+  transition: background-color 0.3s ease, transform 0.2s ease;
+}
+
+button:focus {
+  outline: none;
+}
+
+button:hover {
+  opacity: 0.85;
+  transform: scale(1.05);
+}
+
+/* OK Button (Alert Modal) */
+#alert-ok {
+  background-color: #007bff;
+  color: white;
+  font-weight: bold;
+  width: 100%;
+}
+
+#alert-ok:hover {
+  background-color: #0056b3;
+}
+
+/* Confirm Modal Styles */
+#confirm-ok, #confirm-cancel {
+  width: 48%;
+  margin: 10px 1%;
+  font-weight: bold;
+  padding: 12px;
+  border-radius: 5px;
+}
+
+/* OK Button (Confirm Modal) */
+#confirm-ok {
+  background-color: #28a745;
+  color: white;
+}
+
+#confirm-ok:hover {
+  background-color: #218838;
+}
+
+/* Cancel Button (Confirm Modal) */
+#confirm-cancel {
+  background-color: #dc3545;
+  color: white;
+}
+
+#confirm-cancel:hover {
+  background-color: #c82333;
+}
+
+/* Animation for Modal Appearance */
+@keyframes fadeIn {
+  0% {
+    opacity: 0;
+    transform: scale(0.9);
+  }
+  100% {
+    opacity: 1;
+    transform: scale(1);
+  }
+}
+
+/* Responsive Design */
+@media (max-width: 600px) {
+  .modal-container {
+    width: 80%;
+    padding: 15px;
+  }
+
+  button {
+    font-size: 14px;
+    padding: 10px 18px;
+  }
+
+  #confirm-ok, #confirm-cancel {
+    width: 100%;
+    margin: 5px 0;
+  }
+}
