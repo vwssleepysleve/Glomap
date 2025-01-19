@@ -1,0 +1,42 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+      <title>Edit Profile</title>
+        <link rel="stylesheet" href="/glomap/css/edit-profile.css">
+          <script type="module" src="/glomap/js/edit-profile.js" defer></script>
+          </head>
+          <body>
+            <!-- Loader for page load -->
+              <div id="loader">
+                  <div class="spinner"></div>
+                    </div>
+
+                      <!-- Edit Profile Form -->
+                        <div id="edit-profile-container" class="hidden">
+                            <header>
+                                  <h1>Edit Your Profile</h1>
+                                      </header>
+                                          <form id="edit-profile-form">
+                                                <label for="user-name">Name</label>
+                                                      <input type="text" id="user-name" placeholder="Update your name" maxlength="20">
+
+                                                            <label for="profile-pic-preview">Profile Picture Preview</label>
+                                                                  <img id="profile-pic-preview" alt="Profile Picture" src="" class="profile-pic-preview">
+
+                                                                        <label for="profile-pic">Update Profile Picture</label>
+                                                                              <input type="file" id="profile-pic" accept="image/*">
+
+                                                                                    <label for="bio">Bio</label>
+                                                                                          <textarea id="bio" placeholder="Update your bio"></textarea>
+
+                                                                                                <label for="ideas">Ideas</label>
+                                                                                                      <textarea id="ideas" placeholder="Update your ideas, separated by commas"></textarea>
+
+                                                                                                            <button type="submit" id="save-profile-btn">Save Changes</button>
+                                                                                                                </form>
+                                                                                                                  </div>
+                                                                                                                  </body>
+                                                                                                                  </html>
+                                                                                                                  

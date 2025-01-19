@@ -1,0 +1,67 @@
+<!-- /Glomap/html/chat.html -->
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Chat</title>
+
+  <!-- Correct CDN for CryptoJS -->
+<script src="https://cdnjs.cloudflare.com/ajax/libs/crypto-js/4.1.1/crypto-js.js"></script>
+<!-- Include Linkify JavaScript -->
+<script src="https://cdn.jsdelivr.net/npm/linkifyjs/dist/linkify.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/linkifyjs/dist/linkify-html.min.js"></script>
+
+<!-- Bootstrap Icons CDN -->
+<link href="https://cdn.jsdelivr.net/npm/bootstrap-icons/font/bootstrap-icons.css" rel="stylesheet">
+<link rel="icon" type="image/png" href="/glomap/assets/app/favicon-96x96.png" sizes="96x96" />
+<link rel="icon" type="image/svg+xml" href="/glomap/assets/app/favicon.svg" />
+<link rel="shortcut icon" href="/glomap/assets/app/favicon.ico" />
+<link rel="apple-touch-icon" sizes="180x180" href="/glomap/assets/app/apple-touch-icon.png" />
+<meta name="apple-mobile-web-app-title" content="Redoks" />
+<link rel="manifest" href="/glomap/assets/app/site.webmanifest" />
+
+  <link rel="stylesheet" href="/Glomap/css/dm1.css">
+  
+</head>
+<body>
+  <div id="chat-app">
+    <div id="chat-header">
+      <img id="selected-user-pic" alt="Profile Pic">
+      <span id="selected-user-name"></span>
+    </div>
+    
+    <div id="chat-messages" class="chat-container"></div>
+
+    <!-- Chat Input Container -->
+    <div id="chat-input">
+      <textarea id="message-input" placeholder="Type a message"></textarea>
+      <button id="send-button" class="btn btn-primary">
+        <i class="bi bi-send fs-4"></i>
+      </button>
+    </div>
+    <!-- Custom Error Popup -->
+
+  </div>
+
+
+
+  <script type="module" src="/Glomap/js/chat.js"></script>
+  <script>
+const messageInput = document.getElementById('message-input');
+const chatMessages = document.getElementById('chat-messages');
+
+messageInput.addEventListener('focus', () => {
+  // Scroll the chat messages container to the bottom when the input is focused
+  chatMessages.scrollTop = chatMessages.scrollHeight;
+});
+
+messageInput.addEventListener('blur', () => {
+  // Optionally, you can scroll back to the top or maintain the current scroll position
+  // chatMessages.scrollTop = 0;
+});
+
+  </script>
+  
+</body>
+</html>

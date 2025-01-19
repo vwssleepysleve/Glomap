@@ -1,0 +1,71 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Error</title>
+  <link rel="stylesheet" href="error.css">
+  <style>
+    /* Global Styles */
+body {
+  margin: 0;
+  padding: 0;
+  font-family: 'Arial', sans-serif;
+  background-color: #000000; /* Dark background */
+  color: #e0e0e0; /* Light text */
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  height: 100vh;
+  text-align: center;
+}
+
+/* Error Container */
+.error-container {
+  max-width: 500px;
+  padding: 20px;
+  background-color: #000000; /* Slightly lighter background */
+  border-radius: 10px;
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.5);
+}
+
+.error-container h1 {
+  font-size: 2.5rem;
+  margin-bottom: 10px;
+  color: #ff6f61; /* Subtle red for the header */
+}
+
+.error-container p {
+  font-size: 1.2rem;
+  margin-bottom: 20px;
+  line-height: 1.5;
+  color: #bbb; /* Muted text */
+}
+
+/* Button */
+.error-btn {
+  display: inline-block;
+  padding: 10px 20px;
+  font-size: 1rem;
+  font-weight: bold;
+  color: #fff;
+  background-color: #3498db; /* Blue button */
+  text-decoration: none;
+  border-radius: 5px;
+  transition: background-color 0.3s ease;
+}
+
+.error-btn:hover {
+  background-color: #2980b9; /* Darker blue on hover */
+}
+
+  </style>
+</head>
+<body>
+  <div class="error-container">
+    <h1>Something Went Wrong</h1>
+    <p>We’re sorry, but an unexpected error has occurred. Please try again later or go back to the homepage.</p>
+    <a href="/" class="error-btn">Go to Homepage</a>
+  </div>
+</body>
+</html>
