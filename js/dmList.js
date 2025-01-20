@@ -1,169 +1,170 @@
 import { auth, db, rtdb } from "./firebase.js";
 import {
   collection,
-    getDocs,
-      doc,
-        getDoc,
-        } from "https://www.gstatic.com/firebasejs/11.1.0/firebase-firestore.js";
-        import {
-          ref,
-            onValue,
-            } from "https://www.gstatic.com/firebasejs/11.1.0/firebase-database.js";
+  getDocs,
+  doc,
+  getDoc,
+} from "https://www.gstatic.com/firebasejs/11.1.0/firebase-firestore.js";
+import {
+  ref,
+  onValue,
+  query,
+  orderByChild,
+} from "https://www.gstatic.com/firebasejs/11.1.0/firebase-database.js";
 
-            let currentUserID = null;
+let currentUserID = null;
 
-            // Fetch the current user ID
-            auth.onAuthStateChanged(async (user) => {
-              if (!user) {
-                  alert("Please log in to access messages.");
-                      window.location.href = "/Glomap/login.html";
-                          return;
-                            }
+// Fetch the current user ID
+auth.onAuthStateChanged(async (user) => {
+  if (!user) {
+    alert("Please log in to access messages.");
+    window.location.href = "/Glomap/login.html";
+    return;
+  }
 
-                              const userRef = doc(db, "users", user.uid);
-                                const userDoc = await getDoc(userRef);
-                                  if (userDoc.exists()) {
-                                      currentUserID = userDoc.data().uniqueId;
-                                          console.log("Current User ID:", currentUserID); // Debugging log
-                                              loadDMList(); // Load DM list once user ID is available
-                                                } else {
-                                                    console.error("User document does not exist.");
-                                                      }
-                                                      });
+  const userRef = doc(db, "users", user.uid);
+  const userDoc = await getDoc(userRef);
+  if (userDoc.exists()) {
+    currentUserID = userDoc.data().uniqueId;
+    console.log("Current User ID:", currentUserID); // Debugging log
+    loadUserList(); // Load all users and sort by last conversation time
+  } else {
+    window.location.href = "/Glomap/profile-setup.html"; // Redirect to profile setup if the user does not exist
+  }
+});
 
-                                                      // Load DM list with users who have interacted with the current user
-                                                      async function loadDMList() {
-                                                        const dmList = document.getElementById("dm-users");
-                                                          dmList.innerHTML = ""; // Clear the DM list
+// Load user list sorted by last conversation time
+async function loadUserList() {
+  const userList = document.getElementById("dm-users");
+  userList.innerHTML = ""; // Clear the user list
 
-                                                            if (!currentUserID) return; // Ensure currentUserID is loaded
+  if (!currentUserID) return;
 
-                                                              try {
-                                                                  // Fetch all conversations from RTDB to determine interacted users
-                                                                      const chatKeys = [
-                                                                            `${currentUserID}_`,
-                                                                                  `_${currentUserID}`,
-                                                                                      ];
+  try {
+    const usersSnapshot = await getDocs(collection(db, "users"));
+    const userConversations = [];
 
-                                                                                          const usersSnapshot = await getDocs(collection(db, "users"));
-                                                                                              const interactedUsers = new Set(); // To track users who interacted
+    // Fetch all users and last conversation times
+    const promises = usersSnapshot.docs.map(async (doc) => {
+      const user = doc.data();
+      if (user.uniqueId === currentUserID) return null; // Skip the current user
 
-                                                                                                  usersSnapshot.forEach((doc) => {
-                                                                                                        const user = doc.data();
-                                                                                                              
-                                                                                                                    if (user.uniqueId === currentUserID) return; // Skip current user
+      const chatID =
+        currentUserID < user.uniqueId
+          ? `${currentUserID}_${user.uniqueId}`
+          : `${user.uniqueId}_${currentUserID}`;
+      const chatRef = ref(rtdb, `messages/${chatID}/lastMessageTime`);
 
-                                                                                                                          chatKeys.forEach((key) => {
-                                                                                                                                  // Check if there is a conversation with the user in RTDB
-                                                                                                                                          const chatRef = ref(rtdb, `messages/${key}${user.uniqueId}`);
-                                                                                                                                                  onValue(chatRef, (snapshot) => {
-                                                                                                                                                            if (snapshot.exists()) {
-                                                                                                                                                                        interactedUsers.add(user.uniqueId); // Add to interacted users
-                                                                                                                                                                                    updateDMList(user); // Add user to DM list
-                                                                                                                                                                                              }
-                                                                                                                                                                                                      });
-                                                                                                                                                                                                            });
-                                                                                                                                                                                                                });
-                                                                                                                                                                                                                  } catch (error) {
-                                                                                                                                                                                                                      console.error("Error fetching users from Firestore:", error);
-                                                                                                                                                                                                                        }
-                                                                                                                                                                                                                        }
+      return new Promise((resolve) => {
+        onValue(chatRef, (snapshot) => {
+          const lastMessageTime = snapshot.exists() ? snapshot.val() : null;
+          resolve({
+            user,
+            lastMessageTime,
+          });
+        });
+      });
+    });
 
-                                                                                                                                                                                                                        // Update the DM list with user profiles and verification badge
-                                                                                                                                                                                                                        function updateDMList(user) {
-                                                                                                                                                                                                                          const dmList = document.getElementById("dm-users");
+    const results = await Promise.all(promises);
+    results
+      .filter(Boolean)
+      .sort((a, b) => (b.lastMessageTime || 0) - (a.lastMessageTime || 0))
+      .forEach(({ user }) => updateUserList(user));
+  } catch (error) {
+    console.error("Error loading user list:", error);
+  }
+}
 
-                                                                                                                                                                                                                            let li = document.querySelector(`li[data-user-id="${user.uniqueId}"]`);
-                                                                                                                                                                                                                              if (!li) {
-                                                                                                                                                                                                                                  li = document.createElement("li");
-                                                                                                                                                                                                                                      li.setAttribute("data-user-id", user.uniqueId);
+// Update user list
+function updateUserList(user) {
+  const userList = document.getElementById("dm-users");
 
-                                                                                                                                                                                                                                          const isVerified = user.isVerified; // Assuming 'isVerified' field in user document
+  let li = document.querySelector(`li[data-user-id="${user.uniqueId}"]`);
+  if (!li) {
+    li = document.createElement("li");
+    li.setAttribute("data-user-id", user.uniqueId);
 
-                                                                                                                                                                                                                                              li.innerHTML = `
-                                                                                                                                                                                                                                                    <img src="${user.profilePic || "/Glomap/assets/images/profile-pic.jpg"}" class="user-avatar" alt="${user.userName}">
-                                                                                                                                                                                                                                                          <div class="user-info">
-                                                                                                                                                                                                                                                                  <span class="user-name">${user.userName}</span>
-                                                                                                                                                                                                                                                                          <span class="user-id">${user.userID}</span>
-                                                                                                                                                                                                                                                                                  <span class="latest-message"></span>
-                                                                                                                                                                                                                                                                                          <span class="message-count"></span>
-                                                                                                                                                                                                                                                                                                  ${isVerified ? '<i class="bi bi-patch-check-fill text-primary"></i>' : ''}
-                                                                                                                                                                                                                                                                                                        </div>
-                                                                                                                                                                                                                                                                                                            `;
-                                                                                                                                                                                                                                                                                                                li.addEventListener("click", () => openChat(user)); // Open chat when clicked
-                                                                                                                                                                                                                                                                                                                    dmList.appendChild(li);
-                                                                                                                                                                                                                                                                                                                      }
+    const isVerified = user.isVerified; // Assuming 'isVerified' field in user document
 
-                                                                                                                                                                                                                                                                                                                        // Optionally, update the latest message
-                                                                                                                                                                                                                                                                                                                          // You can add logic here to fetch the latest message from the chat and update the UI.
-                                                                                                                                                                                                                                                                                                                          }
+    li.innerHTML = `
+      <img src="${user.profilePic || "/Glomap/assets/images/profile-pic.jpg"}" class="user-avatar" alt="${user.userName}">
+      <div class="user-info">
+        <span class="user-name">${user.userName}</span>
+        <span class="user-id">${user.userID}</span>
+        ${isVerified ? '<i class="bi bi-patch-check-fill text-primary"></i>' : ""}
+      </div>
+    `;
+    li.addEventListener("click", () => openChat(user));
+    userList.appendChild(li);
+  }
+}
 
-                                                                                                                                                                                                                                                                                                                          // Search users and manage close button
-                                                                                                                                                                                                                                                                                                                          const searchBar = document.getElementById("search-bar");
-                                                                                                                                                                                                                                                                                                                          const searchResults = document.getElementById("search-results");
-                                                                                                                                                                                                                                                                                                                          const closeButton = document.getElementById("close-search");
+// Search functionality
+const searchBar = document.getElementById("search-bar");
+const searchResults = document.getElementById("search-results");
+const closeButton = document.getElementById("close-search");
 
-                                                                                                                                                                                                                                                                                                                          searchBar.addEventListener("input", async (e) => {
-                                                                                                                                                                                                                                                                                                                            const queryText = e.target.value.toLowerCase();
-                                                                                                                                                                                                                                                                                                                              searchResults.innerHTML = ""; // Clear previous search results
+searchBar.addEventListener("input", async (e) => {
+  const queryText = e.target.value.toLowerCase();
+  searchResults.innerHTML = ""; // Clear previous search results
 
-                                                                                                                                                                                                                                                                                                                                // Hide the search results and close button if input is empty
-                                                                                                                                                                                                                                                                                                                                  if (queryText === "") {
-                                                                                                                                                                                                                                                                                                                                      searchResults.style.display = "none";
-                                                                                                                                                                                                                                                                                                                                          closeButton.style.display = "none";
-                                                                                                                                                                                                                                                                                                                                              return;
-                                                                                                                                                                                                                                                                                                                                                }
+  // Hide the search results and close button if input is empty
+  if (queryText === "") {
+    searchResults.style.display = "none";
+    closeButton.style.display = "none";
+    return;
+  }
 
-                                                                                                                                                                                                                                                                                                                                                  // Show the search results and close button
-                                                                                                                                                                                                                                                                                                                                                    searchResults.style.display = "block";
-                                                                                                                                                                                                                                                                                                                                                      closeButton.style.display = "block";
+  // Show the search results and close button
+  searchResults.style.display = "block";
+  closeButton.style.display = "block";
 
-                                                                                                                                                                                                                                                                                                                                                        const usersSnapshot = await getDocs(collection(db, "users"));
+  const usersSnapshot = await getDocs(collection(db, "users"));
 
-                                                                                                                                                                                                                                                                                                                                                          usersSnapshot.forEach((doc) => {
-                                                                                                                                                                                                                                                                                                                                                              const user = doc.data();
+  usersSnapshot.forEach((doc) => {
+    const user = doc.data();
 
-                                                                                                                                                                                                                                                                                                                                                                  // Filter users based on the search input
-                                                                                                                                                                                                                                                                                                                                                                      if (
-                                                                                                                                                                                                                                                                                                                                                                            user.userID.toLowerCase().includes(queryText) ||
-                                                                                                                                                                                                                                                                                                                                                                                  user.userName.toLowerCase().includes(queryText)
-                                                                                                                                                                                                                                                                                                                                                                                      ) {
-                                                                                                                                                                                                                                                                                                                                                                                            const li = document.createElement("li");
+    // Filter users based on the search input
+    if (
+      user.userID.toLowerCase().includes(queryText) ||
+      user.userName.toLowerCase().includes(queryText)
+    ) {
+      const li = document.createElement("li");
 
-                                                                                                                                                                                                                                                                                                                                                                                                  const isVerified = user.isVerified; // Assuming 'isVerified' field in user document
+      const isVerified = user.isVerified; // Assuming 'isVerified' field in user document
 
-                                                                                                                                                                                                                                                                                                                                                                                                        li.innerHTML = `
-                                                                                                                                                                                                                                                                                                                                                                                                                <img src="${user.profilePic || "/Glomap/assets/images/profile-pic.jpg"}" class="search-avatar" alt="${user.userName}">
-                                                                                                                                                                                                                                                                                                                                                                                                                        <div class="search-info">
-                                                                                                                                                                                                                                                                                                                                                                                                                                  <span class="search-name">${user.userName}</span>
-                                                                                                                                                                                                                                                                                                                                                                                                                                            <span class="search-id">${user.userID}</span>
-                                                                                                                                                                                                                                                                                                                                                                                                                                                      ${isVerified ? '<i class="bi bi-patch-check-fill text-primary"></i>' : ''}
-                                                                                                                                                                                                                                                                                                                                                                                                                                                              </div>
-                                                                                                                                                                                                                                                                                                                                                                                                                                                                    `;
+      li.innerHTML = `
+        <img src="${user.profilePic || "/Glomap/assets/images/profile-pic.jpg"}" class="search-avatar" alt="${user.userName}">
+        <div class="search-info">
+          <span class="search-name">${user.userName}</span>
+          <span class="search-id">${user.userID}</span>
+          ${isVerified ? '<i class="bi bi-patch-check-fill text-primary"></i>' : ""}
+        </div>
+      `;
 
-                                                                                                                                                                                                                                                                                                                                                                                                                                                                          li.addEventListener("click", () => openChat(user)); // Open chat when clicked
-                                                                                                                                                                                                                                                                                                                                                                                                                                                                                searchResults.appendChild(li);
-                                                                                                                                                                                                                                                                                                                                                                                                                                                                                    }
-                                                                                                                                                                                                                                                                                                                                                                                                                                                                                      });
-                                                                                                                                                                                                                                                                                                                                                                                                                                                                                      });
+      li.addEventListener("click", () => openChat(user));
+      searchResults.appendChild(li);
+    }
+  });
+});
 
-                                                                                                                                                                                                                                                                                                                                                                                                                                                                                      // Close search results when the close button is clicked
-                                                                                                                                                                                                                                                                                                                                                                                                                                                                                      closeButton.addEventListener("click", () => {
-                                                                                                                                                                                                                                                                                                                                                                                                                                                                                        searchBar.value = ""; // Clear search bar
-                                                                                                                                                                                                                                                                                                                                                                                                                                                                                          searchResults.innerHTML = ""; // Clear search results
-                                                                                                                                                                                                                                                                                                                                                                                                                                                                                            searchResults.style.display = "none"; // Hide search results
-                                                                                                                                                                                                                                                                                                                                                                                                                                                                                              closeButton.style.display = "none"; // Hide the close button
-                                                                                                                                                                                                                                                                                                                                                                                                                                                                                              });
+// Close search results
+closeButton.addEventListener("click", () => {
+  searchBar.value = ""; // Clear search bar
+  searchResults.innerHTML = ""; // Clear search results
+  searchResults.style.display = "none"; // Hide search results
+  closeButton.style.display = "none"; // Hide the close button
+});
 
-                                                                                                                                                                                                                                                                                                                                                                                                                                                                                              // Open chat page
-                                                                                                                                                                                                                                                                                                                                                                                                                                                                                              function openChat(user) {
-                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                const chatID =
-                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                    currentUserID < user.uniqueId
-                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                          ? `${currentUserID}_${user.uniqueId}`
-                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                : `${user.uniqueId}_${currentUserID}`;
+// Open chat
+function openChat(user) {
+  const chatID =
+    currentUserID < user.uniqueId
+      ? `${currentUserID}_${user.uniqueId}`
+      : `${user.uniqueId}_${currentUserID}`;
 
-                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                  window.location.href = `/Glomap/chat.html?chatID=${chatID}&userName=${user.userName}&profilePic=${
-                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                      user.profilePic || "/Glomap/assets/images/profile-pic.jpg"
-                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                        }`;
-                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                        }
-                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                        
+  window.location.href = `/Glomap/chat.html?chatID=${chatID}&userName=${user.userName}&profilePic=${
+    user.profilePic || "/Glomap/assets/images/profile-pic.jpg"
+  }`;
+}
