@@ -6,24 +6,20 @@
     <title>REDOKS</title>
     <link rel="stylesheet" href="/Glomap/css/index.css"> <!-- Link to the external CSS file -->
     <link rel="icon" type="image/png" href="/Glomap/assets/app/favicon-96x96.png" sizes="96x96" />
-<link rel="icon" type="image/svg+xml" href="/Glomap/assets/app/favicon.svg" />
-<link rel="shortcut icon" href="/glomap/assets/app/favicon.ico" />
-<link rel="apple-touch-icon" sizes="180x180" href="/Glomap/assets/app/apple-touch-icon.png" />
-<meta name="apple-mobile-web-app-title" content="Redoks" />
-<link rel="manifest" href="/Glomap/assets/app/site.webmanifest" />
-<link rel="stylesheet" href="/Glomap/css/applook.css">
-        <script src="/Glomap/js/applook.js"></script>
-
+    <link rel="icon" type="image/svg+xml" href="/Glomap/assets/app/favicon.svg" />
+    <link rel="shortcut icon" href="/Glomap/assets/app/favicon.ico" />
+    <link rel="apple-touch-icon" sizes="180x180" href="/Glomap/assets/app/apple-touch-icon.png" />
+    <meta name="apple-mobile-web-app-title" content="Redoks" />
+    <link rel="manifest" href="/Glomap/assets/app/site.webmanifest" />
 </head>
 <body>
     <!-- Loader -->
     <div id="loading">
-        <div class="spinner"></div>
         <p>Loading...</p>
     </div>
 
     <!-- Main content -->
-    <div id="content">
+    <div id="content" style="display: none;">
         <div class="header">
             <img src="/Glomap/assets/images/redoks.png" alt="App Logo" class="app-logo">
             <h1>Welcome to REDOKS</h1>
@@ -34,7 +30,7 @@
                 We are thrilled to have you here. Start exploring now!
             </p>
             <p class="info-message">
-                <strong>Note:</strong> This is an under-development version deployed for testing purposes. Access is limited to a few individuals.
+                <strong>Note: </strong> This is an under-development version deployed for testing purposes. Access is limited to a few individuals.
             </p>
         </div>
 
@@ -44,29 +40,71 @@
         </div>
     </div>
 
+    <!-- Import Firebase SDKs -->
     <script type="module">
-        import { auth } from '/Glomap/js/firebase.js';
+        import { auth, db } from '/Glomap/js/firebase.js';
         import { onAuthStateChanged, signOut } from "https://www.gstatic.com/firebasejs/11.1.0/firebase-auth.js";
+        import { doc, getDoc } from "https://www.gstatic.com/firebasejs/11.1.0/firebase-firestore.js";
 
         const loadingDiv = document.getElementById("loading");
         const contentDiv = document.getElementById("content");
         const logoutBtn = document.getElementById("logoutBtn");
 
+        // Show loader
+        const showLoader = () => {
+            loadingDiv.style.display = "flex";
+            contentDiv.style.display = "none";
+        };
+
+        // Hide loader
+        const hideLoader = () => {
+            loadingDiv.style.display = "none";
+            contentDiv.style.display = "block";
+        };
+
         // Check authentication state
-        onAuthStateChanged(auth, (user) => {
+        onAuthStateChanged(auth, async (user) => {
             if (user) {
-                loadingDiv.style.display = "none";
-                contentDiv.style.display = "block";
+                showLoader();
+
+                try {
+                    // Fetch user profile data from Firestore
+                    const userRef = doc(db, "users", user.uid);
+                    const userDoc = await getDoc(userRef);
+
+                    if (userDoc.exists()) {
+                        const data = userDoc.data();
+
+                        // Redirect to profile setup if required fields are missing
+                        if (!data.userName || !data.userID) {
+                            window.location.href = "/Glomap/profile-setup.html";
+                            return;
+                        }
+
+                        hideLoader(); // Show the main content if all data is valid
+                    } else {
+                        // If user document doesn't exist, redirect to profile setup
+                        window.location.href = "/Glomap/profile-setup.html";
+                    }
+                } catch (error) {
+                    console.error("Error fetching user data:", error);
+                    window.location.href = "/Glomap/login.html"; // Redirect to login on error
+                }
             } else {
+                // Redirect to login if not authenticated
                 window.location.href = "/Glomap/login.html";
             }
         });
 
         // Logout functionality
         logoutBtn.addEventListener("click", () => {
-            signOut(auth).then(() => {
-                window.location.href = "/Glomap/login.html";
-            });
+            signOut(auth)
+                .then(() => {
+                    window.location.href = "/Glomap/login.html";
+                })
+                .catch((error) => {
+                    console.error("Error logging out:", error);
+                });
         });
     </script>
 </body>
